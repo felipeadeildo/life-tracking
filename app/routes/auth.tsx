@@ -1,9 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { Navigate, useNavigate } from 'react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import type { Route } from './+types/auth'
+import { useAuth } from '~/contexts/auth'
 import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import {
   Form,
@@ -13,16 +16,14 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
-import { useAuth } from '~/contexts/auth'
-import type { Route } from './+types/auth'
 
-const authSchema = z.object({
-  email: z.string().email('Email inv�lido'),
+const formSchema = z.object({
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
+  email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
 })
 
-type AuthFormValues = z.infer<typeof authSchema>
+type FormValues = z.infer<typeof formSchema>
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Auth - Life Tracking' }, { name: 'description', content: 'Login or Sign up' }]
@@ -35,9 +36,10 @@ export default function Auth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const form = useForm<AuthFormValues>({
-    resolver: zodResolver(authSchema),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
@@ -47,7 +49,7 @@ export default function Auth() {
     return <Navigate to="/" replace />
   }
 
-  const onSubmit = async (values: AuthFormValues) => {
+  const onSubmit = async (values: FormValues) => {
     setLoading(true)
     setError('')
 
@@ -55,7 +57,11 @@ export default function Auth() {
       if (isLogin) {
         await signIn(values.email, values.password)
       } else {
-        await signUp(values.email, values.password)
+        if (!values.name) {
+          setError('Nome é obrigatório para cadastro')
+          return
+        }
+        await signUp(values.email, values.password, values.name)
       }
       navigate('/')
     } catch (err: any) {
@@ -83,6 +89,21 @@ export default function Auth() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {!isLogin && (
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite seu nome completo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="email"
@@ -90,7 +111,7 @@ export default function Auth() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Digite seu email" {...field} />
+                      <Input type="email" placeholder="Digite seu email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
