@@ -1,26 +1,23 @@
-import { Outlet } from 'react-router'
-import { AuthProvider, useAuth } from './contexts/auth'
+import { Navigate, Outlet } from 'react-router'
+import { useAuth } from './contexts/auth'
 
 export default function ProtectedLayout() {
-  return (
-    <AuthProvider>
-      <Layout />
-    </AuthProvider>
-  )
-}
+  const { user, isLoading } = useAuth()
 
-function Layout() {
-  const data = useAuth()
-  if (data === null || data.isLoading) {
-    return <div className="text-2xl">Carregando...</div>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl">Carregando...</div>
+      </div>
+    )
   }
 
-  const { user, session } = data
+  if (!user) {
+    return <Navigate to="/auth" replace />
+  }
 
   return (
     <div className="min-h-screen">
-      <p>Session: {JSON.stringify(session)}</p>
-      <p>User: {JSON.stringify(user)}</p>
       <Outlet />
     </div>
   )
