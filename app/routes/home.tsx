@@ -6,7 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card'
+import { WeightChart } from '~/components/weight-chart'
+import { WeightForm } from '~/components/weight-form'
+import { WeightTable } from '~/components/weight-table'
 import { useAuth } from '~/contexts/auth'
+import { useWeight } from '~/hooks/use-weight'
 import type { Route } from './+types/home'
 
 export function meta({}: Route.MetaArgs) {
@@ -18,6 +22,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const { user, signOut } = useAuth()
+  const { weights, loading, error, hasEntryToday, addWeight } = useWeight()
 
   const handleSignOut = () => {
     try {
@@ -25,6 +30,10 @@ export default function Home() {
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
     }
+  }
+
+  const handleAddWeight = async (weight: number, date: string) => {
+    return await addWeight(weight, date)
   }
 
   return (
@@ -41,6 +50,50 @@ export default function Home() {
           <Button variant="outline" onClick={handleSignOut}>
             Sair
           </Button>
+        </div>
+
+        {/* Weight Tracking Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Weight Chart */}
+          <div className="lg:col-span-2">
+            <WeightChart weights={weights} />
+          </div>
+
+          {/* Weight Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Registrar Peso</CardTitle>
+              <CardDescription>
+                Adicione seu peso diário para acompanhar sua evolução
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {error && (
+                  <div className="text-red-500 text-sm">{error}</div>
+                )}
+                <WeightForm onSubmit={handleAddWeight} disabled={hasEntryToday} />
+                {hasEntryToday && (
+                  <p className="text-sm text-green-600">
+                    ✅ Peso já registrado hoje!
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Weight Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Histórico Recente</CardTitle>
+              <CardDescription>
+                Seus últimos registros de peso
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WeightTable weights={weights} loading={loading} />
+            </CardContent>
+          </Card>
         </div>
 
         {/* User Info Card */}
