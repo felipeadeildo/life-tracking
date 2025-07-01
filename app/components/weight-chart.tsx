@@ -29,7 +29,7 @@ interface WeightChartProps {
 const chartConfig = {
   weight: {
     label: 'Peso (kg)',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--color-chart-2)',
   },
 } satisfies ChartConfig
 
