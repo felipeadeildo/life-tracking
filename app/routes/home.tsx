@@ -1,12 +1,15 @@
+import { LogOut, User } from 'lucide-react'
+import { DistanceTracker } from '~/components/distance/distance-tracker'
+import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card'
-import { DistanceTracker } from '~/components/distance/distance-tracker'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
 import { WeightTracker } from '~/components/weight/weight-tracker'
 import { useAuth } from '~/contexts/auth'
 import { useDistance } from '~/hooks/use-distance'
@@ -23,7 +26,13 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const { user, signOut } = useAuth()
   const { weights, loading, error, hasEntryToday, addWeight } = useWeight()
-  const { distances, loading: distanceLoading, error: distanceError, hasEntryToday: hasDistanceToday, addDistance } = useDistance()
+  const {
+    distances,
+    loading: distanceLoading,
+    error: distanceError,
+    hasEntryToday: hasDistanceToday,
+    addDistance,
+  } = useDistance()
 
   const handleSignOut = () => {
     try {
@@ -42,22 +51,56 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
+    <div className="min-h-screen">
+      <header className="border-b">
+        <div className="flex h-16 items-center justify-between px-6">
           <div>
-            <h1 className="text-3xl font-bold">
-              Bem-vindo ao Life Tracking! 👋
-            </h1>
-            <p className="mt-1">Gerencie sua vida de forma organizada</p>
+            <h1 className="text-xl font-semibold">Life Tracking</h1>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            Sair
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>
+                    {user?.user_metadata?.full_name?.charAt(0) ||
+                      user?.email?.charAt(0) ||
+                      'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user?.user_metadata?.full_name || 'Usuário'}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-sm text-muted-foreground">
+                <User className="mr-2 h-4 w-4" />
+                Conta criada em{' '}
+                {user?.created_at
+                  ? new Date(user.created_at).toLocaleDateString('pt-BR')
+                  : 'N/A'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+
+      <main className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <WeightTracker
             weights={weights}
             loading={loading}
@@ -73,45 +116,7 @@ export default function Home() {
             onAddDistance={handleAddDistance}
           />
         </div>
-
-        {/* User Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Suas Informações</CardTitle>
-            <CardDescription>Dados da sua conta</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Nome</label>
-                <p className="">
-                  {user?.user_metadata?.full_name || 'Não informado'}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Email</label>
-                <p className="">{user?.email}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Conta criada em</label>
-                <p className="">
-                  {user?.created_at
-                    ? new Date(user.created_at).toLocaleDateString('pt-BR')
-                    : 'N/A'}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Último login</label>
-                <p className="">
-                  {user?.last_sign_in_at
-                    ? new Date(user.last_sign_in_at).toLocaleDateString('pt-BR')
-                    : 'N/A'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </main>
     </div>
   )
 }
