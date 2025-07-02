@@ -54,28 +54,22 @@ export function WeightChart({ weights }: WeightChartProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-semibold">Evolução do Peso</h3>
-          <p className="text-sm text-muted-foreground">
-            Acompanhe sua evolução ao longo do tempo
-          </p>
-        </div>
+    <div className="flex flex-col">
+      <div className="flex justify-between items-center mb-3">
         <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger>
             <SelectValue placeholder="Período" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="7d">Últimos 7 dias</SelectItem>
-            <SelectItem value="30d">Últimos 30 dias</SelectItem>
-            <SelectItem value="90d">Últimos 90 dias</SelectItem>
+            <SelectItem value="7d">7 dias</SelectItem>
+            <SelectItem value="30d">30 dias</SelectItem>
+            <SelectItem value="90d">90 dias</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <ChartContainer
         config={chartConfig}
-        className="aspect-auto h-[250px] w-full"
+        className="flex-1 w-full"
       >
         <AreaChart data={filteredData}>
           <defs>
