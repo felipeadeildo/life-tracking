@@ -19,12 +19,12 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import type { WeightEntry } from '~/types'
+import type { MetricEntry } from '~/types'
 
 interface WeightTableProps {
-  weights: WeightEntry[]
+  weights: MetricEntry[]
   loading: boolean
-  onDeleteWeight?: (id: string) => Promise<boolean>
+  onDeleteWeight?: (id: number) => Promise<boolean>
 }
 
 export function WeightTable({
@@ -46,7 +46,7 @@ export function WeightTable({
 
   const recentWeights = weights.slice(0, 10)
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (onDeleteWeight) {
       await onDeleteWeight(id)
     }
@@ -71,9 +71,9 @@ export function WeightTable({
         </TableHeader>
         <TableBody>
           {recentWeights.map((entry, index) => {
-            const previousWeight = recentWeights[index + 1]?.weight
+            const previousWeight = recentWeights[index + 1]?.value
             const difference = previousWeight
-              ? entry.weight - previousWeight
+              ? entry.value - previousWeight
               : null
 
             return (
@@ -82,7 +82,7 @@ export function WeightTable({
                   {new Date(entry.date).toLocaleDateString('pt-BR')}
                 </TableCell>
                 <TableCell className="font-medium">
-                  {entry.weight.toFixed(1)} kg
+                  {entry.value.toFixed(1)} kg
                 </TableCell>
                 <TableCell>
                   {difference !== null ? (

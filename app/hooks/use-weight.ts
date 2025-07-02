@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '~/contexts/auth'
 import { supabase } from '~/lib/supabase-client'
-import type { WeightEntry } from '~/types'
+import type { MetricEntry } from '~/types'
 
 export function useWeight() {
   const { user } = useAuth()
-  const [weights, setWeights] = useState<WeightEntry[]>([])
+  const [weights, setWeights] = useState<MetricEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -21,9 +21,10 @@ export function useWeight() {
 
     try {
       const { data, error } = await supabase
-        .from('weight_entries')
+        .from('metrics')
         .select('*')
         .eq('user_id', user.id)
+        .eq('type', 'weight')
         .order('date', { ascending: false })
 
       if (error) throw error
@@ -41,11 +42,12 @@ export function useWeight() {
 
     try {
       const { data, error } = await supabase
-        .from('weight_entries')
+        .from('metrics')
         .insert([
           {
-            weight,
+            value: weight,
             date,
+            type: 'weight',
             user_id: user.id,
           },
         ])

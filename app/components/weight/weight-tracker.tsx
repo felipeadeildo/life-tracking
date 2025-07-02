@@ -14,15 +14,15 @@ import {
 import { WeightChart } from '~/components/weight/weight-chart'
 import { WeightForm } from '~/components/weight/weight-form'
 import { WeightTable } from '~/components/weight/weight-table'
-import type { WeightEntry } from '~/types'
+import type { MetricEntry } from '~/types'
 
 interface WeightTrackerProps {
-  weights: WeightEntry[]
+  weights: MetricEntry[]
   loading: boolean
   error: string | null
   hasEntryToday: boolean
   onAddWeight: (weight: number, date: string) => Promise<boolean>
-  onDeleteWeight?: (id: string) => Promise<boolean>
+  onDeleteWeight?: (id: number) => Promise<boolean>
 }
 
 export function WeightTracker({ weights, loading, error, hasEntryToday, onAddWeight, onDeleteWeight }: WeightTrackerProps) {

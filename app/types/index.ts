@@ -1,6 +1,6 @@
 import type { Tables, TablesInsert, TablesUpdate } from './database'
 
-// Tipos derivados para facilitar o uso
-export type WeightEntry = Tables<'weight_entries'>
-export type WeightEntryInsert = TablesInsert<'weight_entries'>
-export type WeightEntryUpdate = TablesUpdate<'weight_entries'>
+export type MetricEntry = Tables<'metrics'>
+export type MetricEntryInsert = TablesInsert<'metrics'>
+export type MetricEntryUpdate = TablesUpdate<'metrics'>
+export type MetricEnum = Tables<'metrics'>['type']

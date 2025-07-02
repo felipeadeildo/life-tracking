@@ -9,27 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      weight_entries: {
+      metrics: {
         Row: {
           created_at: string
           date: string
           id: number
+          type: Database["public"]["Enums"]["MetricType"]
           user_id: string
-          weight: number
+          value: number
         }
         Insert: {
           created_at?: string
           date?: string
           id?: number
+          type?: Database["public"]["Enums"]["MetricType"]
           user_id?: string
-          weight: number
+          value: number
         }
         Update: {
           created_at?: string
           date?: string
           id?: number
+          type?: Database["public"]["Enums"]["MetricType"]
           user_id?: string
-          weight?: number
+          value?: number
         }
         Relationships: []
       }
@@ -41,7 +44,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      MetricType: "weight" | "height" | "distance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -156,6 +159,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      MetricType: ["weight", "height", "distance"],
+    },
   },
 } as const

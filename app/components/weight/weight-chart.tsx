@@ -13,10 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import type { WeightEntry } from '~/types'
+import type { MetricEntry } from '~/types'
 
 interface WeightChartProps {
-  weights: WeightEntry[]
+  weights: MetricEntry[]
 }
 
 const chartConfig = {
@@ -42,7 +42,7 @@ export function WeightChart({ weights }: WeightChartProps) {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((entry) => ({
       date: entry.date,
-      weight: entry.weight,
+      weight: entry.value,
     }))
 
   if (weights.length === 0) {
