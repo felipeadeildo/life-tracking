@@ -35,7 +35,7 @@ export function WeightTracker({
   const [open, setOpen] = useState(false)
 
   return (
-    <Card>
+    <Card className="gap-0.5 px-0.5 py-3">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Controle de Peso</CardTitle>
