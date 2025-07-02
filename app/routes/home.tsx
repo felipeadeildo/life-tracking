@@ -6,8 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card'
+import { DistanceTracker } from '~/components/distance/distance-tracker'
 import { WeightTracker } from '~/components/weight/weight-tracker'
 import { useAuth } from '~/contexts/auth'
+import { useDistance } from '~/hooks/use-distance'
 import { useWeight } from '~/hooks/use-weight'
 import type { Route } from './+types/home'
 
@@ -21,6 +23,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const { user, signOut } = useAuth()
   const { weights, loading, error, hasEntryToday, addWeight } = useWeight()
+  const { distances, loading: distanceLoading, error: distanceError, hasEntryToday: hasDistanceToday, addDistance } = useDistance()
 
   const handleSignOut = () => {
     try {
@@ -32,6 +35,10 @@ export default function Home() {
 
   const handleAddWeight = async (weight: number, date: string) => {
     return await addWeight(weight, date)
+  }
+
+  const handleAddDistance = async (distance: number, date: string) => {
+    return await addDistance(distance, date)
   }
 
   return (
@@ -50,13 +57,20 @@ export default function Home() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           <WeightTracker
             weights={weights}
             loading={loading}
             error={error}
             hasEntryToday={hasEntryToday}
             onAddWeight={handleAddWeight}
+          />
+          <DistanceTracker
+            distances={distances}
+            loading={distanceLoading}
+            error={distanceError}
+            hasEntryToday={hasDistanceToday}
+            onAddDistance={handleAddDistance}
           />
         </div>
 
